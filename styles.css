@@ -1,0 +1,269 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2980b9;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --border-color: #bdc3c7;
+    --editor-bg: #1e1e1e;
+    --editor-text: #d4d4d4;
+    --tab-inactive: #f8f9fa;
+    --tab-active: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--light-color);
+    color: #333;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.tab-bar {
+    display: flex;
+    background-color: var(--dark-color);
+    color: white;
+    padding: 0.5rem 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    align-items: center;
+}
+
+.tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    margin: 0 0.2rem;
+    background-color: var(--secondary-color);
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.tab.active {
+    background-color: var(--tab-active);
+    color: var(--dark-color);
+}
+
+.tab span {
+    margin-right: 0.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    font-size: 0.8rem;
+}
+
+.close-btn:hover {
+    color: var(--danger-color);
+}
+
+.add-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+.add-btn:hover {
+    color: var(--success-color);
+}
+
+.editor-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.file-explorer {
+    width: 250px;
+    background-color: var(--tab-inactive);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+}
+
+.file-tree {
+    padding: 1rem;
+}
+
+.file-tree ul {
+    list-style: none;
+    padding-left: 1rem;
+}
+
+.file-tree li {
+    padding: 0.3rem 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.file-tree li i {
+    margin-right: 0.5rem;
+    width: 1rem;
+    text-align: center;
+}
+
+.file-tree li:hover {
+    color: var(--primary-color);
+}
+
+.file-tree li.active {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.folder > span {
+    font-weight: bold;
+}
+
+.code-editor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.editor-toolbar {
+    padding: 0.5rem;
+    background-color: var(--dark-color);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.editor-toolbar button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.editor-toolbar button:hover {
+    background-color: var(--secondary-color);
+}
+
+#editor {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    resize: none;
+    background-color: var(--editor-bg);
+    color: var(--editor-text);
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    tab-size: 4;
+}
+
+.preview-pane {
+    flex: 1;
+    border-left: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+#preview-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: white;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+}
+
+.modal-content h3 {
+    margin-bottom: 1rem;
+}
+
+.modal-content input, .modal-content select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.modal-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-actions button:first-child {
+    background-color: var(--light-color);
+}
+
+.modal-actions button:last-child {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
