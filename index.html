@@ -3,50 +3,760 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Code Compiler</title>
+    <title>Tabbed Code Compiler</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --toolbar-height: 40px;
+            --preview-width: 45%;
+            --primary-color: #1e1e1e;
+            --secondary-color: #252526;
+            --accent-color: #007acc;
+            --tab-height: 35px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            color: #e0e0e0;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            background-color: var(--primary-color);
+        }
+
+        /* Sidebar with tabbed interface */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--secondary-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-bar {
+            display: flex;
+            height: var(--tab-height);
+            background-color: #333;
+            border-bottom: 1px solid #444;
+        }
+
+        .tab {
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background-color: #2d2d2d;
+            border-right: 1px solid #444;
+            font-size: 12px;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background-color: var(--secondary-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .tab-close {
+            margin-left: 8px;
+            color: #888;
+        }
+
+        .tab-close:hover {
+            color: #fff;
+        }
+
+        .file-explorer {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .file-item {
+            padding: 8px 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            margin: 2px 0;
+        }
+
+        .file-item:hover {
+            background-color: #2a2d2e;
+        }
+
+        .file-item.active {
+            background-color: #37373d;
+            color: var(--accent-color);
+        }
+
+        .file-item i {
+            font-size: 14px;
+            color: inherit;
+        }
+
+        .file-actions {
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #444;
+        }
+
+        .file-actions button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .file-actions button:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Editor area */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--primary-color);
+        }
+
+        .editor-toolbar {
+            height: var(--toolbar-height);
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .editor-toolbar select, .editor-toolbar button {
+            height: 28px;
+            padding: 0 10px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .editor-toolbar button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .editor-toolbar button:hover {
+            background-color: var(--accent-color);
+        }
+
+        .editor-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .editor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* Preview area */
+        .preview-area {
+            width: var(--preview-width);
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-left: 1px solid #444;
+        }
+
+        .preview-toolbar {
+            height: var(--toolbar-height);
+            background-color: #f3f3f3;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            border-bottom: 1px solid #ddd;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .preview-toolbar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .preview-toolbar button:hover {
+            color: #000;
+        }
+
+        .preview-frame {
+            flex: 1;
+            border: none;
+            background-color: white;
+        }
+
+        /* Context menu */
+        .context-menu {
+            position: absolute;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 150px;
+            display: none;
+        }
+
+        .context-menu-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-menu-item:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #888;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar with file structure -->
+        <!-- Sidebar with tabbed interface -->
         <div class="sidebar">
+            <div class="tab-bar" id="tab-bar">
+                <!-- Tabs will be added here dynamically -->
+            </div>
             <div class="file-actions">
-                <button id="new-file"><i class="fas fa-file"></i> New File</button>
-                <button id="new-folder"><i class="fas fa-folder"></i> New Folder</button>
+                <button id="new-file"><i class="fas fa-file-code"></i> File</button>
+                <button id="new-folder"><i class="fas fa-folder"></i> Folder</button>
             </div>
             <div class="file-explorer" id="file-explorer">
-                <!-- Files will be loaded here -->
+                <div class="empty-state" id="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p>No files yet. Create a new file or folder to get started.</p>
+                </div>
             </div>
         </div>
 
         <!-- Editor area -->
         <div class="editor-area">
-            <div class="toolbar">
+            <div class="editor-toolbar">
                 <select id="language-selector">
                     <option value="html">HTML</option>
                     <option value="css">CSS</option>
                     <option value="javascript">JavaScript</option>
-                    <option value="php">PHP</option>
                 </select>
                 <button id="run-btn"><i class="fas fa-play"></i> Run</button>
                 <button id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
             </div>
-            <div id="editor" class="editor"></div>
+            <div class="editor-container">
+                <div id="editor" class="editor"></div>
+            </div>
         </div>
 
         <!-- Preview area -->
         <div class="preview-area">
             <div class="preview-toolbar">
                 <span>Preview</span>
-                <button id="refresh-preview"><i class="fas fa-sync-alt"></i></button>
+                <button id="refresh-preview"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
             <iframe id="preview-frame" class="preview-frame"></iframe>
         </div>
     </div>
 
+    <!-- Context menu -->
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item" data-action="rename"><i class="fas fa-pen"></i> Rename</div>
+        <div class="context-menu-item" data-action="delete"><i class="fas fa-trash"></i> Delete</div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // Initialize Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
+        let editor;
+        let currentFile = null;
+        let activeTab = null;
+        let files = {
+            'root': {
+                type: 'folder',
+                name: 'root',
+                children: {
+                    'index.html': {
+                        type: 'file',
+                        name: 'index.html',
+                        language: 'html',
+                        content: '<!DOCTYPE html>\n<html>\n<head>\n\t<title>My Page</title>\n\t<link rel="stylesheet" href="style.css">\n</head>\n<body>\n\t<h1>Hello World!</h1>\n\t<script src="script.js"></script>\n</body>\n</html>'
+                    },
+                    'style.css': {
+                        type: 'file',
+                        name: 'style.css',
+                        language: 'css',
+                        content: 'body { font-family: Arial; background-color: #f0f0f0; color: #333; }'
+                    },
+                    'script.js': {
+                        type: 'file',
+                        name: 'script.js',
+                        language: 'javascript',
+                        content: 'console.log("Hello from JS!");'
+                    }
+                }
+            }
+        };
+
+        // DOM Elements
+        const tabBar = document.getElementById('tab-bar');
+        const fileExplorer = document.getElementById('file-explorer');
+        const emptyState = document.getElementById('empty-state');
+        const contextMenu = document.getElementById('context-menu');
+        let contextMenuItem = null;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Monaco Editor
+            require(['vs/editor/editor.main'], function() {
+                editor = monaco.editor.create(document.getElementById('editor'), {
+                    value: '',
+                    language: 'html',
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    minimap: { enabled: false }
+                });
+
+                // Watch for editor changes
+                editor.onDidChangeModelContent(() => {
+                    if (currentFile) {
+                        updateFileContent(currentFile, editor.getValue());
+                    }
+                });
+
+                // Render initial file structure
+                renderFileExplorer();
+                openInitialFiles();
+            });
+
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        // File explorer functions
+        function renderFileExplorer() {
+            fileExplorer.innerHTML = '';
+            const rootFolder = files['root'];
+            
+            if (Object.keys(rootFolder.children).length === 0) {
+                emptyState.style.display = 'flex';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            renderFolderContents(rootFolder, fileExplorer);
+        }
+
+        function renderFolderContents(folder, parentElement) {
+            Object.values(folder.children).forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'file-item';
+                itemElement.dataset.path = item.name;
+                itemElement.innerHTML = `
+                    <i class="fas ${item.type === 'folder' ? 'fa-folder' : 'fa-file-code'}"></i>
+                    <span>${item.name}</span>
+                `;
+                
+                // Add click handler
+                itemElement.addEventListener('click', (e) => {
+                    if (item.type === 'file') {
+                        openFile(item);
+                    }
+                });
+                
+                // Add context menu
+                itemElement.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e, item);
+                });
+                
+                parentElement.appendChild(itemElement);
+            });
+        }
+
+        function openFile(file) {
+            // Check if file is already open in a tab
+            const existingTab = document.querySelector(`.tab[data-path="${file.name}"]`);
+            if (existingTab) {
+                setActiveTab(existingTab);
+                return;
+            }
+            
+            // Create new tab
+            const tab = document.createElement('div');
+            tab.className = 'tab';
+            tab.dataset.path = file.name;
+            tab.innerHTML = `
+                <span>${file.name}</span>
+                <i class="fas fa-times tab-close"></i>
+            `;
+            
+            // Add tab click handler
+            tab.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tab-close')) {
+                    closeTab(tab);
+                    e.stopPropagation();
+                } else {
+                    setActiveTab(tab);
+                }
+            });
+            
+            tabBar.appendChild(tab);
+            setActiveTab(tab);
+            
+            // Set editor content
+            const model = monaco.editor.createModel(
+                file.content,
+                file.language
+            );
+            editor.setModel(model);
+            
+            // Update language selector
+            document.getElementById('language-selector').value = file.language;
+            
+            // Set current file
+            currentFile = file.name;
+        }
+
+        function setActiveTab(tab) {
+            // Update tab states
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            activeTab = tab;
+            
+            // Update file explorer selection
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.path === tab.dataset.path) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Update editor content
+            const file = findFileByName(tab.dataset.path);
+            if (file) {
+                const model = monaco.editor.createModel(
+                    file.content,
+                    file.language
+                );
+                editor.setModel(model);
+                document.getElementById('language-selector').value = file.language;
+                currentFile = file.name;
+                
+                // Update preview if HTML
+                if (file.name.endsWith('.html')) {
+                    updatePreview();
+                }
+            }
+        }
+
+        function closeTab(tab) {
+            tab.remove();
+            
+            // If we're closing the active tab, activate another one
+            if (tab === activeTab) {
+                const remainingTabs = document.querySelectorAll('.tab');
+                if (remainingTabs.length > 0) {
+                    setActiveTab(remainingTabs[remainingTabs.length - 1]);
+                } else {
+                    // No tabs left
+                    editor.setModel(monaco.editor.createModel('', 'html'));
+                    currentFile = null;
+                }
+            }
+        }
+
+        function openInitialFiles() {
+            // Open the first HTML file we find
+            const rootFolder = files['root'];
+            const htmlFile = Object.values(rootFolder.children).find(file => 
+                file.type === 'file' && file.name.endsWith('.html')
+            );
+            
+            if (htmlFile) {
+                openFile(htmlFile);
+            } else {
+                // Open the first file we find
+                const firstFile = Object.values(rootFolder.children).find(file => file.type === 'file');
+                if (firstFile) {
+                    openFile(firstFile);
+                }
+            }
+        }
+
+        // File management functions
+        function findFileByName(name) {
+            const rootFolder = files['root'];
+            return rootFolder.children[name];
+        }
+
+        function updateFileContent(filename, content) {
+            const file = findFileByName(filename);
+            if (file) {
+                file.content = content;
+                
+                // If this is the active tab and it's HTML, update preview
+                if (activeTab && activeTab.dataset.path === filename && filename.endsWith('.html')) {
+                    updatePreview();
+                }
+            }
+        }
+
+        function createNewFile(filename, language) {
+            const rootFolder = files['root'];
+            
+            rootFolder.children[filename] = {
+                type: 'file',
+                name: filename,
+                language: language,
+                content: language === 'html' ? '<!DOCTYPE html>\n<html>\n<head>\n\t<title>New Document</title>\n</head>\n<body>\n\t\n</body>\n</html>' : 
+                       language === 'css' ? '/* Your CSS here */' : 
+                       '// Your JavaScript here'
+            };
+            
+            renderFileExplorer();
+            openFile(rootFolder.children[filename]);
+        }
+
+        function createNewFolder(foldername) {
+            const rootFolder = files['root'];
+            
+            rootFolder.children[foldername] = {
+                type: 'folder',
+                name: foldername,
+                children: {}
+            };
+            
+            renderFileExplorer();
+        }
+
+        function renameFile(oldName, newName) {
+            const rootFolder = files['root'];
+            if (rootFolder.children[oldName]) {
+                const file = rootFolder.children[oldName];
+                file.name = newName;
+                rootFolder.children[newName] = file;
+                delete rootFolder.children[oldName];
+                
+                // Update tab if open
+                const tab = document.querySelector(`.tab[data-path="${oldName}"]`);
+                if (tab) {
+                    tab.dataset.path = newName;
+                    tab.querySelector('span').textContent = newName;
+                    
+                    if (tab === activeTab) {
+                        currentFile = newName;
+                    }
+                }
+                
+                renderFileExplorer();
+            }
+        }
+
+        function deleteFile(filename) {
+            const rootFolder = files['root'];
+            if (rootFolder.children[filename]) {
+                delete rootFolder.children[filename];
+                
+                // Close tab if open
+                const tab = document.querySelector(`.tab[data-path="${filename}"]`);
+                if (tab) {
+                    closeTab(tab);
+                }
+                
+                renderFileExplorer();
+            }
+        }
+
+        // Preview functions
+        function updatePreview() {
+            if (!currentFile) return;
+            
+            const file = findFileByName(currentFile);
+            if (!file || !file.name.endsWith('.html')) return;
+            
+            const previewFrame = document.getElementById('preview-frame');
+            
+            // Get all linked resources
+            let htmlContent = file.content;
+            const cssFile = Object.values(files['root'].children).find(f => f.name === 'style.css');
+            const jsFile = Object.values(files['root'].children).find(f => f.name === 'script.js');
+            
+            // If style.css exists but isn't linked, add it
+            if (cssFile && !htmlContent.includes('style.css')) {
+                const headEnd = htmlContent.indexOf('</head>');
+                if (headEnd !== -1) {
+                    htmlContent = htmlContent.slice(0, headEnd) + 
+                                 '\n\t<link rel="stylesheet" href="style.css">' + 
+                                 htmlContent.slice(headEnd);
+                }
+            }
+            
+            // If script.js exists but isn't linked, add it
+            if (jsFile && !htmlContent.includes('script.js')) {
+                const bodyEnd = htmlContent.indexOf('</body>');
+                if (bodyEnd !== -1) {
+                    htmlContent = htmlContent.slice(0, bodyEnd) + 
+                                 '\n\t<script src="script.js"></script>' + 
+                                 htmlContent.slice(bodyEnd);
+                }
+            }
+            
+            previewFrame.srcdoc = htmlContent;
+        }
+
+        // Context menu functions
+        function showContextMenu(e, item) {
+            contextMenuItem = item;
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.pageX}px`;
+            contextMenu.style.top = `${e.pageY}px`;
+            
+            // Close menu when clicking elsewhere
+            const closeMenu = () => {
+                contextMenu.style.display = 'none';
+                document.removeEventListener('click', closeMenu);
+            };
+            
+            setTimeout(() => {
+                document.addEventListener('click', closeMenu);
+            }, 100);
+        }
+
+        function handleContextMenuAction(action) {
+            if (!contextMenuItem) return;
+            
+            switch(action) {
+                case 'rename':
+                    const newName = prompt('Enter new name:', contextMenuItem.name);
+                    if (newName && newName !== contextMenuItem.name) {
+                        renameFile(contextMenuItem.name, newName);
+                    }
+                    break;
+                case 'delete':
+                    if (confirm(`Are you sure you want to delete ${contextMenuItem.name}?`)) {
+                        deleteFile(contextMenuItem.name);
+                    }
+                    break;
+            }
+            
+            contextMenuItem = null;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // New file button
+            document.getElementById('new-file').addEventListener('click', () => {
+                const fileName = prompt('Enter file name (include extension .html, .css, .js):');
+                if (fileName) {
+                    const extension = fileName.split('.').pop();
+                    let language = 'plaintext';
+                    
+                    if (['html', 'htm'].includes(extension)) language = 'html';
+                    else if (extension === 'css') language = 'css';
+                    else if (extension === 'js') language = 'javascript';
+                    
+                    createNewFile(fileName, language);
+                }
+            });
+            
+            // New folder button
+            document.getElementById('new-folder').addEventListener('click', () => {
+                const folderName = prompt('Enter folder name:');
+                if (folderName) {
+                    createNewFolder(folderName);
+                }
+            });
+            
+            // Run button
+            document.getElementById('run-btn').addEventListener('click', updatePreview);
+            
+            // Refresh preview button
+            document.getElementById('refresh-preview').addEventListener('click', updatePreview);
+            
+            // Copy button
+            document.getElementById('copy-btn').addEventListener('click', () => {
+                navigator.clipboard.writeText(editor.getValue());
+                alert('Code copied to clipboard!');
+            });
+            
+            // Language selector
+            document.getElementById('language-selector').addEventListener('change', (e) => {
+                if (currentFile) {
+                    const file = findFileByName(currentFile);
+                    if (file) {
+                        file.language = e.target.value;
+                        monaco.editor.setModelLanguage(editor.getModel(), e.target.value);
+                    }
+                }
+            });
+            
+            // Context menu actions
+            document.querySelectorAll('.context-menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    handleContextMenuAction(item.dataset.action);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
