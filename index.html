@@ -3,975 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Code Compiler</title>
+    <title>Real-Time Code Compiler</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #1e1e1e;
-            --secondary-color: #252526;
-            --accent-color: #007acc;
-            --tab-height: 35px;
-            --toolbar-height: 40px;
-            --preview-width: 45%;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            color: #e0e0e0;
-            background-color: var(--primary-color);
-        }
-
-        /* Top level container */
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        /* Project tabs */
-        .project-tabs {
-            display: flex;
-            height: var(--tab-height);
-            background-color: #333;
-            border-bottom: 1px solid #444;
-        }
-
-        .project-tab {
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            background-color: #2d2d2d;
-            border-right: 1px solid #444;
-            font-size: 13px;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .project-tab.active {
-            background-color: var(--secondary-color);
-            border-bottom: 2px solid var(--accent-color);
-        }
-
-        .project-tab-close {
-            margin-left: 8px;
-            color: #888;
-        }
-
-        .project-tab-close:hover {
-            color: #fff;
-        }
-
-        .add-project {
-            padding: 0 10px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        .add-project:hover {
-            color: #fff;
-            background-color: #3a3a3a;
-        }
-
-        /* Folder tabs */
-        .folder-tabs {
-            display: flex;
-            height: var(--tab-height);
-            background-color: var(--secondary-color);
-            border-bottom: 1px solid #444;
-        }
-
-        .folder-tab {
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            background-color: #333;
-            border-right: 1px solid #444;
-            font-size: 13px;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .folder-tab.active {
-            background-color: #3a3a3a;
-            border-bottom: 2px solid var(--accent-color);
-        }
-
-        .folder-tab-close {
-            margin-left: 8px;
-            color: #888;
-        }
-
-        .folder-tab-close:hover {
-            color: #fff;
-        }
-
-        .add-folder {
-            padding: 0 10px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        .add-folder:hover {
-            color: #fff;
-            background-color: #444;
-        }
-
-        /* File tabs */
-        .file-tabs {
-            display: flex;
-            height: var(--tab-height);
-            background-color: #3a3a3a;
-            border-bottom: 1px solid #444;
-        }
-
-        .file-tab {
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            background-color: #444;
-            border-right: 1px solid #555;
-            font-size: 13px;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .file-tab.active {
-            background-color: var(--primary-color);
-            border-bottom: 2px solid var(--accent-color);
-        }
-
-        .file-tab-close {
-            margin-left: 8px;
-            color: #888;
-        }
-
-        .file-tab-close:hover {
-            color: #fff;
-        }
-
-        .add-file {
-            padding: 0 10px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        .add-file:hover {
-            color: #fff;
-            background-color: #555;
-        }
-
-        /* Main content area */
-        .content-area {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Editor area */
-        .editor-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--primary-color);
-        }
-
-        .editor-toolbar {
-            height: var(--toolbar-height);
-            background-color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            gap: 10px;
-            border-bottom: 1px solid #444;
-        }
-
-        .editor-toolbar select, .editor-toolbar button {
-            height: 28px;
-            padding: 0 10px;
-            background-color: #333;
-            color: white;
-            border: 1px solid #555;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .editor-toolbar button {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: background-color 0.2s;
-        }
-
-        .editor-toolbar button:hover {
-            background-color: var(--accent-color);
-        }
-
-        .editor-container {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .editor {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        /* Preview area */
-        .preview-area {
-            width: var(--preview-width);
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            border-left: 1px solid #444;
-        }
-
-        .preview-toolbar {
-            height: var(--toolbar-height);
-            background-color: #f3f3f3;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 15px;
-            border-bottom: 1px solid #ddd;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .preview-toolbar button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #555;
-            font-size: 14px;
-        }
-
-        .preview-toolbar button:hover {
-            color: #000;
-        }
-
-        .preview-frame {
-            flex: 1;
-            border: none;
-            background-color: white;
-        }
-
-        /* Context menu */
-        .context-menu {
-            position: absolute;
-            background-color: #333;
-            border: 1px solid #444;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            min-width: 150px;
-            display: none;
-        }
-
-        .context-menu-item {
-            padding: 8px 15px;
-            cursor: pointer;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .context-menu-item:hover {
-            background-color: var(--accent-color);
-        }
-
-        /* Empty state */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #888;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .empty-state i {
-            font-size: 40px;
-            margin-bottom: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Project tabs -->
-        <div class="project-tabs" id="project-tabs">
-            <div class="project-tab active" data-project="default">
-                <span>Default Project</span>
-                <i class="fas fa-times project-tab-close"></i>
+    <div class="app-container">
+        <!-- Top Project Tab Bar -->
+        <div class="tab-bar project-tab-bar">
+            <div class="tab active" data-id="project-1">
+                <span>Project 1</span>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
             </div>
-            <div class="add-project" id="add-project">
-                <i class="fas fa-plus"></i>
-            </div>
+            <button class="add-btn" id="add-project"><i class="fas fa-plus"></i></button>
         </div>
 
-        <!-- Folder tabs -->
-        <div class="folder-tabs" id="folder-tabs">
-            <div class="folder-tab active" data-folder="main">
-                <span>main</span>
-                <i class="fas fa-times folder-tab-close"></i>
+        <!-- Folder Tab Bar -->
+        <div class="tab-bar folder-tab-bar">
+            <div class="tab active" data-id="folder-1">
+                <span>Main</span>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
             </div>
-            <div class="add-folder" id="add-folder">
-                <i class="fas fa-plus"></i>
-            </div>
+            <button class="add-btn" id="add-folder"><i class="fas fa-plus"></i></button>
         </div>
 
-        <!-- File tabs -->
-        <div class="file-tabs" id="file-tabs">
-            <div class="file-tab active" data-file="index.html">
+        <!-- File Tab Bar -->
+        <div class="tab-bar file-tab-bar">
+            <div class="tab active" data-id="file-1">
                 <span>index.html</span>
-                <i class="fas fa-times file-tab-close"></i>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
             </div>
-            <div class="add-file" id="add-file">
-                <i class="fas fa-plus"></i>
+            <div class="tab" data-id="file-2">
+                <span>styles.css</span>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
             </div>
+            <div class="tab" data-id="file-3">
+                <span>script.js</span>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <button class="add-btn" id="add-file"><i class="fas fa-plus"></i></button>
         </div>
 
-        <!-- Main content area -->
-        <div class="content-area">
-            <!-- Editor area -->
-            <div class="editor-area">
+        <div class="editor-container">
+            <!-- File Explorer Sidebar -->
+            <div class="file-explorer">
+                <div class="file-tree">
+                    <ul id="project-structure">
+                        <li class="folder active" data-id="folder-1">
+                            <span><i class="fas fa-folder"></i> Main</span>
+                            <ul>
+                                <li class="file active" data-id="file-1"><i class="fas fa-file-code"></i> index.html</li>
+                                <li class="file" data-id="file-2"><i class="fas fa-file-code"></i> styles.css</li>
+                                <li class="file" data-id="file-3"><i class="fas fa-file-code"></i> script.js</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="code-editor">
                 <div class="editor-toolbar">
-                    <select id="language-selector">
-                        <option value="html">HTML</option>
-                        <option value="css">CSS</option>
-                        <option value="javascript">JavaScript</option>
-                    </select>
                     <button id="run-btn"><i class="fas fa-play"></i> Run</button>
-                    <button id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                    <button id="save-btn"><i class="fas fa-save"></i> Save</button>
                 </div>
-                <div class="editor-container">
-                    <div id="editor" class="editor"></div>
-                </div>
+                <textarea id="editor" spellcheck="false"></textarea>
             </div>
 
-            <!-- Preview area -->
-            <div class="preview-area">
-                <div class="preview-toolbar">
-                    <span>Preview</span>
-                    <button id="refresh-preview"><i class="fas fa-sync-alt"></i> Refresh</button>
-                </div>
-                <iframe id="preview-frame" class="preview-frame"></iframe>
+            <!-- Preview Pane -->
+            <div class="preview-pane">
+                <iframe id="preview-frame"></iframe>
             </div>
         </div>
     </div>
 
-    <!-- Context menu -->
-    <div class="context-menu" id="context-menu">
-        <div class="context-menu-item" data-action="rename"><i class="fas fa-pen"></i> Rename</div>
-        <div class="context-menu-item" data-action="delete"><i class="fas fa-trash"></i> Delete</div>
+    <!-- Modals -->
+    <div class="modal" id="new-project-modal">
+        <div class="modal-content">
+            <h3>New Project</h3>
+            <input type="text" id="project-name" placeholder="Project name">
+            <div class="modal-actions">
+                <button id="cancel-project">Cancel</button>
+                <button id="create-project">Create</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
-    <script>
-        // Data structure
-        let projects = {
-            'default': {
-                name: 'Default Project',
-                folders: {
-                    'main': {
-                        name: 'main',
-                        files: {
-                            'index.html': {
-                                name: 'index.html',
-                                language: 'html',
-                                content: '<!DOCTYPE html>\n<html>\n<head>\n\t<title>My Project</title>\n\t<link rel="stylesheet" href="style.css">\n</head>\n<body>\n\t<h1>Welcome to my project!</h1>\n\t<script src="script.js"></script>\n</body>\n</html>'
-                            },
-                            'style.css': {
-                                name: 'style.css',
-                                language: 'css',
-                                content: 'body { font-family: Arial; background-color: #f0f0f0; color: #333; margin: 0; padding: 20px; }'
-                            },
-                            'script.js': {
-                                name: 'script.js',
-                                language: 'javascript',
-                                content: 'console.log("Hello from JavaScript!");'
-                            }
-                        }
-                    }
-                }
-            }
-        };
+    <div class="modal" id="new-folder-modal">
+        <div class="modal-content">
+            <h3>New Folder</h3>
+            <input type="text" id="folder-name" placeholder="Folder name">
+            <div class="modal-actions">
+                <button id="cancel-folder">Cancel</button>
+                <button id="create-folder">Create</button>
+            </div>
+        </div>
+    </div>
 
-        // Current state
-        let currentProject = 'default';
-        let currentFolder = 'main';
-        let currentFile = 'index.html';
-        let editor;
-        let contextMenuItem = null;
-        let contextMenuType = null;
+    <div class="modal" id="new-file-modal">
+        <div class="modal-content">
+            <h3>New File</h3>
+            <input type="text" id="file-name" placeholder="File name">
+            <select id="file-type">
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="js">JavaScript</option>
+            </select>
+            <div class="modal-actions">
+                <button id="cancel-file">Cancel</button>
+                <button id="create-file">Create</button>
+            </div>
+        </div>
+    </div>
 
-        // Initialize Monaco Editor
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
-        require(['vs/editor/editor.main'], function() {
-            editor = monaco.editor.create(document.getElementById('editor'), {
-                value: projects[currentProject].folders[currentFolder].files[currentFile].content,
-                language: 'html',
-                theme: 'vs-dark',
-                automaticLayout: true,
-                minimap: { enabled: false }
-            });
-
-            // Watch for editor changes
-            editor.onDidChangeModelContent(() => {
-                updateFileContent(currentFile, editor.getValue());
-            });
-
-            // Initial preview
-            updatePreview();
-        });
-
-        // DOM Elements
-        const projectTabs = document.getElementById('project-tabs');
-        const folderTabs = document.getElementById('folder-tabs');
-        const fileTabs = document.getElementById('file-tabs');
-        const contextMenu = document.getElementById('context-menu');
-
-        // Setup event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add project button
-            document.getElementById('add-project').addEventListener('click', addNewProject);
-
-            // Add folder button
-            document.getElementById('add-folder').addEventListener('click', addNewFolder);
-
-            // Add file button
-            document.getElementById('add-file').addEventListener('click', addNewFile);
-
-            // Run button
-            document.getElementById('run-btn').addEventListener('click', updatePreview);
-
-            // Refresh preview button
-            document.getElementById('refresh-preview').addEventListener('click', updatePreview);
-
-            // Copy button
-            document.getElementById('copy-btn').addEventListener('click', () => {
-                navigator.clipboard.writeText(editor.getValue());
-                alert('Code copied to clipboard!');
-            });
-
-            // Language selector
-            document.getElementById('language-selector').addEventListener('change', (e) => {
-                const file = getCurrentFile();
-                if (file) {
-                    file.language = e.target.value;
-                    monaco.editor.setModelLanguage(editor.getModel(), e.target.value);
-                }
-            });
-
-            // Context menu actions
-            document.querySelectorAll('.context-menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    handleContextMenuAction(item.dataset.action);
-                });
-            });
-
-            // Close context menu when clicking elsewhere
-            document.addEventListener('click', () => {
-                contextMenu.style.display = 'none';
-            });
-
-            // Render initial tabs
-            renderProjectTabs();
-            renderFolderTabs();
-            renderFileTabs();
-        });
-
-        // Tab rendering functions
-        function renderProjectTabs() {
-            projectTabs.innerHTML = '';
-            
-            Object.keys(projects).forEach(projectId => {
-                const project = projects[projectId];
-                const tab = document.createElement('div');
-                tab.className = `project-tab ${projectId === currentProject ? 'active' : ''}`;
-                tab.dataset.project = projectId;
-                tab.innerHTML = `
-                    <span>${project.name}</span>
-                    <i class="fas fa-times project-tab-close"></i>
-                `;
-                
-                tab.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('project-tab-close')) {
-                        closeProject(projectId);
-                        e.stopPropagation();
-                    } else {
-                        setCurrentProject(projectId);
-                    }
-                });
-                
-                projectTabs.insertBefore(tab, document.getElementById('add-project'));
-            });
-        }
-
-        function renderFolderTabs() {
-            folderTabs.innerHTML = '';
-            
-            const project = projects[currentProject];
-            if (!project) return;
-            
-            Object.keys(project.folders).forEach(folderId => {
-                const folder = project.folders[folderId];
-                const tab = document.createElement('div');
-                tab.className = `folder-tab ${folderId === currentFolder ? 'active' : ''}`;
-                tab.dataset.folder = folderId;
-                tab.innerHTML = `
-                    <span>${folder.name}</span>
-                    <i class="fas fa-times folder-tab-close"></i>
-                `;
-                
-                tab.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('folder-tab-close')) {
-                        closeFolder(folderId);
-                        e.stopPropagation();
-                    } else {
-                        setCurrentFolder(folderId);
-                    }
-                });
-                
-                folderTabs.insertBefore(tab, document.getElementById('add-folder'));
-            });
-        }
-
-        function renderFileTabs() {
-            fileTabs.innerHTML = '';
-            
-            const folder = getCurrentFolder();
-            if (!folder) return;
-            
-            Object.keys(folder.files).forEach(fileId => {
-                const file = folder.files[fileId];
-                const tab = document.createElement('div');
-                tab.className = `file-tab ${fileId === currentFile ? 'active' : ''}`;
-                tab.dataset.file = fileId;
-                tab.innerHTML = `
-                    <span>${file.name}</span>
-                    <i class="fas fa-times file-tab-close"></i>
-                `;
-                
-                tab.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('file-tab-close')) {
-                        closeFile(fileId);
-                        e.stopPropagation();
-                    } else {
-                        setCurrentFile(fileId);
-                    }
-                });
-                
-                fileTabs.insertBefore(tab, document.getElementById('add-file'));
-            });
-        }
-
-        // Project management
-        function addNewProject() {
-            const projectName = prompt('Enter project name:');
-            if (projectName) {
-                const projectId = 'project-' + Date.now();
-                projects[projectId] = {
-                    name: projectName,
-                    folders: {
-                        'main': {
-                            name: 'main',
-                            files: {
-                                'index.html': {
-                                    name: 'index.html',
-                                    language: 'html',
-                                    content: '<!DOCTYPE html>\n<html>\n<head>\n\t<title>New Project</title>\n</head>\n<body>\n\t\n</body>\n</html>'
-                                }
-                            }
-                        }
-                    }
-                };
-                
-                renderProjectTabs();
-                setCurrentProject(projectId);
-                setCurrentFolder('main');
-                setCurrentFile('index.html');
-            }
-        }
-
-        function closeProject(projectId) {
-            if (Object.keys(projects).length <= 1) {
-                alert('You must have at least one project');
-                return;
-            }
-            
-            delete projects[projectId];
-            
-            if (projectId === currentProject) {
-                currentProject = Object.keys(projects)[0];
-                const project = projects[currentProject];
-                currentFolder = Object.keys(project.folders)[0];
-                const folder = project.folders[currentFolder];
-                currentFile = Object.keys(folder.files)[0];
-                
-                renderProjectTabs();
-                renderFolderTabs();
-                renderFileTabs();
-                updateEditor();
-            } else {
-                renderProjectTabs();
-            }
-        }
-
-        function setCurrentProject(projectId) {
-            currentProject = projectId;
-            const project = projects[projectId];
-            
-            // Set first folder as current
-            currentFolder = Object.keys(project.folders)[0];
-            const folder = project.folders[currentFolder];
-            
-            // Set first file as current
-            currentFile = Object.keys(folder.files)[0];
-            
-            renderProjectTabs();
-            renderFolderTabs();
-            renderFileTabs();
-            updateEditor();
-        }
-
-        // Folder management
-        function addNewFolder() {
-            const folderName = prompt('Enter folder name:');
-            if (folderName) {
-                const folderId = 'folder-' + Date.now();
-                projects[currentProject].folders[folderId] = {
-                    name: folderName,
-                    files: {}
-                };
-                
-                renderFolderTabs();
-                setCurrentFolder(folderId);
-            }
-        }
-
-        function closeFolder(folderId) {
-            const project = projects[currentProject];
-            if (Object.keys(project.folders).length <= 1) {
-                alert('You must have at least one folder');
-                return;
-            }
-            
-            delete project.folders[folderId];
-            
-            if (folderId === currentFolder) {
-                currentFolder = Object.keys(project.folders)[0];
-                const folder = project.folders[currentFolder];
-                currentFile = Object.keys(folder.files)[0];
-                
-                renderFolderTabs();
-                renderFileTabs();
-                updateEditor();
-            } else {
-                renderFolderTabs();
-            }
-        }
-
-        function setCurrentFolder(folderId) {
-            currentFolder = folderId;
-            const folder = projects[currentProject].folders[folderId];
-            
-            // Set first file as current if exists
-            const fileKeys = Object.keys(folder.files);
-            currentFile = fileKeys.length > 0 ? fileKeys[0] : null;
-            
-            renderFolderTabs();
-            renderFileTabs();
-            
-            if (currentFile) {
-                updateEditor();
-            } else {
-                editor.setModel(monaco.editor.createModel('', 'html'));
-            }
-        }
-
-        // File management
-        function addNewFile() {
-            const fileName = prompt('Enter file name (include extension .html, .css, .js):');
-            if (fileName) {
-                const extension = fileName.split('.').pop();
-                let language = 'plaintext';
-                
-                if (['html', 'htm'].includes(extension)) language = 'html';
-                else if (extension === 'css') language = 'css';
-                else if (extension === 'js') language = 'javascript';
-                
-                const fileId = 'file-' + Date.now();
-                projects[currentProject].folders[currentFolder].files[fileId] = {
-                    name: fileName,
-                    language: language,
-                    content: language === 'html' ? '<!DOCTYPE html>\n<html>\n<head>\n\t<title>New Document</title>\n</head>\n<body>\n\t\n</body>\n</html>' : 
-                           language === 'css' ? '/* Your CSS here */' : 
-                           '// Your JavaScript here'
-                };
-                
-                renderFileTabs();
-                setCurrentFile(fileId);
-            }
-        }
-
-        function closeFile(fileId) {
-            const folder = getCurrentFolder();
-            if (Object.keys(folder.files).length <= 1) {
-                alert('You must have at least one file');
-                return;
-            }
-            
-            delete folder.files[fileId];
-            
-            if (fileId === currentFile) {
-                currentFile = Object.keys(folder.files)[0];
-                renderFileTabs();
-                updateEditor();
-            } else {
-                renderFileTabs();
-            }
-        }
-
-        function setCurrentFile(fileId) {
-            currentFile = fileId;
-            renderFileTabs();
-            updateEditor();
-        }
-
-        // Helper functions
-        function getCurrentProject() {
-            return projects[currentProject];
-        }
-
-        function getCurrentFolder() {
-            const project = getCurrentProject();
-            return project ? project.folders[currentFolder] : null;
-        }
-
-        function getCurrentFile() {
-            const folder = getCurrentFolder();
-            return folder ? folder.files[currentFile] : null;
-        }
-
-        function updateEditor() {
-            const file = getCurrentFile();
-            if (file) {
-                const model = monaco.editor.createModel(
-                    file.content,
-                    file.language
-                );
-                editor.setModel(model);
-                document.getElementById('language-selector').value = file.language;
-                
-                // Update preview if HTML
-                if (file.name.endsWith('.html')) {
-                    updatePreview();
-                }
-            }
-        }
-
-        function updateFileContent(fileId, content) {
-            const file = getCurrentFolder().files[fileId];
-            if (file) {
-                file.content = content;
-                
-                // If this is the active file and it's HTML, update preview
-                if (fileId === currentFile && file.name.endsWith('.html')) {
-                    updatePreview();
-                }
-            }
-        }
-
-        // Preview functions
-        function updatePreview() {
-            const file = getCurrentFile();
-            if (!file || !file.name.endsWith('.html')) return;
-            
-            const previewFrame = document.getElementById('preview-frame');
-            
-            // Get all linked resources
-            let htmlContent = file.content;
-            const folder = getCurrentFolder();
-            
-            // Find CSS and JS files in the same folder
-            const cssFiles = Object.values(folder.files).filter(f => f.name.endsWith('.css'));
-            const jsFiles = Object.values(folder.files).filter(f => f.name.endsWith('.js'));
-            
-            // Inject CSS links if not already present
-            cssFiles.forEach(cssFile => {
-                if (!htmlContent.includes(cssFile.name)) {
-                    const headEnd = htmlContent.indexOf('</head>');
-                    if (headEnd !== -1) {
-                        htmlContent = htmlContent.slice(0, headEnd) + 
-                                     `\n\t<link rel="stylesheet" href="${cssFile.name}">` + 
-                                     htmlContent.slice(headEnd);
-                    }
-                }
-            });
-            
-            // Inject JS scripts if not already present
-            jsFiles.forEach(jsFile => {
-                if (!htmlContent.includes(jsFile.name)) {
-                    const bodyEnd = htmlContent.indexOf('</body>');
-                    if (bodyEnd !== -1) {
-                        htmlContent = htmlContent.slice(0, bodyEnd) + 
-                                     `\n\t<script src="${jsFile.name}"></script>` + 
-                                     htmlContent.slice(bodyEnd);
-                    }
-                }
-            });
-            
-            previewFrame.srcdoc = htmlContent;
-        }
-
-        // Context menu functions
-        function showContextMenu(e, item, type) {
-            e.preventDefault();
-            contextMenuItem = item;
-            contextMenuType = type;
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = `${e.pageX}px`;
-            contextMenu.style.top = `${e.pageY}px`;
-        }
-
-        function handleContextMenuAction(action) {
-            if (!contextMenuItem || !contextMenuType) return;
-            
-            switch(contextMenuType) {
-                case 'project':
-                    handleProjectContextAction(action);
-                    break;
-                case 'folder':
-                    handleFolderContextAction(action);
-                    break;
-                case 'file':
-                    handleFileContextAction(action);
-                    break;
-            }
-            
-            contextMenuItem = null;
-            contextMenuType = null;
-            contextMenu.style.display = 'none';
-        }
-
-        function handleProjectContextAction(action) {
-            const projectId = contextMenuItem.dataset.project;
-            
-            switch(action) {
-                case 'rename':
-                    const newName = prompt('Enter new project name:', projects[projectId].name);
-                    if (newName && newName !== projects[projectId].name) {
-                        projects[projectId].name = newName;
-                        renderProjectTabs();
-                    }
-                    break;
-                case 'delete':
-                    if (confirm(`Are you sure you want to delete project "${projects[projectId].name}"?`)) {
-                        closeProject(projectId);
-                    }
-                    break;
-            }
-        }
-
-        function handleFolderContextAction(action) {
-            const folderId = contextMenuItem.dataset.folder;
-            const folder = projects[currentProject].folders[folderId];
-            
-            switch(action) {
-                case 'rename':
-                    const newName = prompt('Enter new folder name:', folder.name);
-                    if (newName && newName !== folder.name) {
-                        folder.name = newName;
-                        renderFolderTabs();
-                    }
-                    break;
-                case 'delete':
-                    if (confirm(`Are you sure you want to delete folder "${folder.name}"?`)) {
-                        closeFolder(folderId);
-                    }
-                    break;
-            }
-        }
-
-        function handleFileContextAction(action) {
-            const fileId = contextMenuItem.dataset.file;
-            const file = projects[currentProject].folders[currentFolder].files[fileId];
-            
-            switch(action) {
-                case 'rename':
-                    const newName = prompt('Enter new file name:', file.name);
-                    if (newName && newName !== file.name) {
-                        // Validate extension
-                        const oldExt = file.name.split('.').pop();
-                        const newExt = newName.split('.').pop();
-                        
-                        if (oldExt !== newExt) {
-                            alert('Cannot change file extension');
-                            return;
-                        }
-                        
-                        file.name = newName;
-                        renderFileTabs();
-                    }
-                    break;
-                case 'delete':
-                    if (confirm(`Are you sure you want to delete file "${file.name}"?`)) {
-                        closeFile(fileId);
-                    }
-                    break;
-            }
-        }
-
-        // Add context menu to tabs
-        document.querySelectorAll('.project-tab').forEach(tab => {
-            tab.addEventListener('contextmenu', (e) => {
-                showContextMenu(e, tab, 'project');
-            });
-        });
-
-        document.querySelectorAll('.folder-tab').forEach(tab => {
-            tab.addEventListener('contextmenu', (e) => {
-                showContextMenu(e, tab, 'folder');
-            });
-        });
-
-        document.querySelectorAll('.file-tab').forEach(tab => {
-            tab.addEventListener('contextmenu', (e) => {
-                showContextMenu(e, tab, 'file');
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
