@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabbed Code Compiler</title>
+    <title>Project Code Compiler</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --sidebar-width: 250px;
-            --toolbar-height: 40px;
-            --preview-width: 45%;
             --primary-color: #1e1e1e;
             --secondary-color: #252526;
             --accent-color: #007acc;
             --tab-height: 35px;
+            --toolbar-height: 40px;
+            --preview-width: 45%;
         }
 
         * {
@@ -27,112 +26,168 @@
             height: 100vh;
             overflow: hidden;
             color: #e0e0e0;
-        }
-
-        .container {
-            display: flex;
-            height: 100vh;
             background-color: var(--primary-color);
         }
 
-        /* Sidebar with tabbed interface */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--secondary-color);
+        /* Top level container */
+        .container {
             display: flex;
             flex-direction: column;
+            height: 100vh;
         }
 
-        .tab-bar {
+        /* Project tabs */
+        .project-tabs {
             display: flex;
             height: var(--tab-height);
             background-color: #333;
             border-bottom: 1px solid #444;
         }
 
-        .tab {
+        .project-tab {
             padding: 0 15px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             cursor: pointer;
             background-color: #2d2d2d;
             border-right: 1px solid #444;
-            font-size: 12px;
-            max-width: 150px;
+            font-size: 13px;
+            max-width: 200px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .tab.active {
+        .project-tab.active {
             background-color: var(--secondary-color);
             border-bottom: 2px solid var(--accent-color);
         }
 
-        .tab-close {
+        .project-tab-close {
             margin-left: 8px;
             color: #888;
         }
 
-        .tab-close:hover {
+        .project-tab-close:hover {
             color: #fff;
         }
 
-        .file-explorer {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .file-item {
-            padding: 8px 5px;
-            cursor: pointer;
-            border-radius: 3px;
+        .add-project {
+            padding: 0 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            margin: 2px 0;
+            cursor: pointer;
+            color: #aaa;
         }
 
-        .file-item:hover {
-            background-color: #2a2d2e;
+        .add-project:hover {
+            color: #fff;
+            background-color: #3a3a3a;
         }
 
-        .file-item.active {
-            background-color: #37373d;
-            color: var(--accent-color);
-        }
-
-        .file-item i {
-            font-size: 14px;
-            color: inherit;
-        }
-
-        .file-actions {
-            padding: 10px;
+        /* Folder tabs */
+        .folder-tabs {
             display: flex;
-            gap: 8px;
+            height: var(--tab-height);
+            background-color: var(--secondary-color);
             border-bottom: 1px solid #444;
         }
 
-        .file-actions button {
-            background-color: #333;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
+        .folder-tab {
+            padding: 0 15px;
             display: flex;
             align-items: center;
-            gap: 5px;
-            transition: background-color 0.2s;
+            cursor: pointer;
+            background-color: #333;
+            border-right: 1px solid #444;
+            font-size: 13px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .file-actions button:hover {
-            background-color: var(--accent-color);
+        .folder-tab.active {
+            background-color: #3a3a3a;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .folder-tab-close {
+            margin-left: 8px;
+            color: #888;
+        }
+
+        .folder-tab-close:hover {
+            color: #fff;
+        }
+
+        .add-folder {
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .add-folder:hover {
+            color: #fff;
+            background-color: #444;
+        }
+
+        /* File tabs */
+        .file-tabs {
+            display: flex;
+            height: var(--tab-height);
+            background-color: #3a3a3a;
+            border-bottom: 1px solid #444;
+        }
+
+        .file-tab {
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            background-color: #444;
+            border-right: 1px solid #555;
+            font-size: 13px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-tab.active {
+            background-color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .file-tab-close {
+            margin-left: 8px;
+            color: #888;
+        }
+
+        .file-tab-close:hover {
+            color: #fff;
+        }
+
+        .add-file {
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .add-file:hover {
+            color: #fff;
+            background-color: #555;
+        }
+
+        /* Main content area */
+        .content-area {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
         }
 
         /* Editor area */
@@ -273,46 +328,65 @@
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar with tabbed interface -->
-        <div class="sidebar">
-            <div class="tab-bar" id="tab-bar">
-                <!-- Tabs will be added here dynamically -->
+        <!-- Project tabs -->
+        <div class="project-tabs" id="project-tabs">
+            <div class="project-tab active" data-project="default">
+                <span>Default Project</span>
+                <i class="fas fa-times project-tab-close"></i>
             </div>
-            <div class="file-actions">
-                <button id="new-file"><i class="fas fa-file-code"></i> File</button>
-                <button id="new-folder"><i class="fas fa-folder"></i> Folder</button>
+            <div class="add-project" id="add-project">
+                <i class="fas fa-plus"></i>
             </div>
-            <div class="file-explorer" id="file-explorer">
-                <div class="empty-state" id="empty-state">
-                    <i class="fas fa-folder-open"></i>
-                    <p>No files yet. Create a new file or folder to get started.</p>
+        </div>
+
+        <!-- Folder tabs -->
+        <div class="folder-tabs" id="folder-tabs">
+            <div class="folder-tab active" data-folder="main">
+                <span>main</span>
+                <i class="fas fa-times folder-tab-close"></i>
+            </div>
+            <div class="add-folder" id="add-folder">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+
+        <!-- File tabs -->
+        <div class="file-tabs" id="file-tabs">
+            <div class="file-tab active" data-file="index.html">
+                <span>index.html</span>
+                <i class="fas fa-times file-tab-close"></i>
+            </div>
+            <div class="add-file" id="add-file">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="content-area">
+            <!-- Editor area -->
+            <div class="editor-area">
+                <div class="editor-toolbar">
+                    <select id="language-selector">
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                    <button id="run-btn"><i class="fas fa-play"></i> Run</button>
+                    <button id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+                <div class="editor-container">
+                    <div id="editor" class="editor"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- Editor area -->
-        <div class="editor-area">
-            <div class="editor-toolbar">
-                <select id="language-selector">
-                    <option value="html">HTML</option>
-                    <option value="css">CSS</option>
-                    <option value="javascript">JavaScript</option>
-                </select>
-                <button id="run-btn"><i class="fas fa-play"></i> Run</button>
-                <button id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+            <!-- Preview area -->
+            <div class="preview-area">
+                <div class="preview-toolbar">
+                    <span>Preview</span>
+                    <button id="refresh-preview"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <iframe id="preview-frame" class="preview-frame"></iframe>
             </div>
-            <div class="editor-container">
-                <div id="editor" class="editor"></div>
-            </div>
-        </div>
-
-        <!-- Preview area -->
-        <div class="preview-area">
-            <div class="preview-toolbar">
-                <span>Preview</span>
-                <button id="refresh-preview"><i class="fas fa-sync-alt"></i> Refresh</button>
-            </div>
-            <iframe id="preview-frame" class="preview-frame"></iframe>
         </div>
     </div>
 
@@ -325,174 +399,394 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
     <script>
-        // Initialize Monaco Editor
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
-        let editor;
-        let currentFile = null;
-        let activeTab = null;
-        let files = {
-            'root': {
-                type: 'folder',
-                name: 'root',
-                children: {
-                    'index.html': {
-                        type: 'file',
-                        name: 'index.html',
-                        language: 'html',
-                        content: '<!DOCTYPE html>\n<html>\n<head>\n\t<title>My Page</title>\n\t<link rel="stylesheet" href="style.css">\n</head>\n<body>\n\t<h1>Hello World!</h1>\n\t<script src="script.js"></script>\n</body>\n</html>'
-                    },
-                    'style.css': {
-                        type: 'file',
-                        name: 'style.css',
-                        language: 'css',
-                        content: 'body { font-family: Arial; background-color: #f0f0f0; color: #333; }'
-                    },
-                    'script.js': {
-                        type: 'file',
-                        name: 'script.js',
-                        language: 'javascript',
-                        content: 'console.log("Hello from JS!");'
+        // Data structure
+        let projects = {
+            'default': {
+                name: 'Default Project',
+                folders: {
+                    'main': {
+                        name: 'main',
+                        files: {
+                            'index.html': {
+                                name: 'index.html',
+                                language: 'html',
+                                content: '<!DOCTYPE html>\n<html>\n<head>\n\t<title>My Project</title>\n\t<link rel="stylesheet" href="style.css">\n</head>\n<body>\n\t<h1>Welcome to my project!</h1>\n\t<script src="script.js"></script>\n</body>\n</html>'
+                            },
+                            'style.css': {
+                                name: 'style.css',
+                                language: 'css',
+                                content: 'body { font-family: Arial; background-color: #f0f0f0; color: #333; margin: 0; padding: 20px; }'
+                            },
+                            'script.js': {
+                                name: 'script.js',
+                                language: 'javascript',
+                                content: 'console.log("Hello from JavaScript!");'
+                            }
+                        }
                     }
                 }
             }
         };
 
-        // DOM Elements
-        const tabBar = document.getElementById('tab-bar');
-        const fileExplorer = document.getElementById('file-explorer');
-        const emptyState = document.getElementById('empty-state');
-        const contextMenu = document.getElementById('context-menu');
+        // Current state
+        let currentProject = 'default';
+        let currentFolder = 'main';
+        let currentFile = 'index.html';
+        let editor;
         let contextMenuItem = null;
+        let contextMenuType = null;
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Monaco Editor
-            require(['vs/editor/editor.main'], function() {
-                editor = monaco.editor.create(document.getElementById('editor'), {
-                    value: '',
-                    language: 'html',
-                    theme: 'vs-dark',
-                    automaticLayout: true,
-                    minimap: { enabled: false }
-                });
-
-                // Watch for editor changes
-                editor.onDidChangeModelContent(() => {
-                    if (currentFile) {
-                        updateFileContent(currentFile, editor.getValue());
-                    }
-                });
-
-                // Render initial file structure
-                renderFileExplorer();
-                openInitialFiles();
+        // Initialize Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: projects[currentProject].folders[currentFolder].files[currentFile].content,
+                language: 'html',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                minimap: { enabled: false }
             });
 
-            // Setup event listeners
-            setupEventListeners();
+            // Watch for editor changes
+            editor.onDidChangeModelContent(() => {
+                updateFileContent(currentFile, editor.getValue());
+            });
+
+            // Initial preview
+            updatePreview();
         });
 
-        // File explorer functions
-        function renderFileExplorer() {
-            fileExplorer.innerHTML = '';
-            const rootFolder = files['root'];
-            
-            if (Object.keys(rootFolder.children).length === 0) {
-                emptyState.style.display = 'flex';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            renderFolderContents(rootFolder, fileExplorer);
-        }
+        // DOM Elements
+        const projectTabs = document.getElementById('project-tabs');
+        const folderTabs = document.getElementById('folder-tabs');
+        const fileTabs = document.getElementById('file-tabs');
+        const contextMenu = document.getElementById('context-menu');
 
-        function renderFolderContents(folder, parentElement) {
-            Object.values(folder.children).forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'file-item';
-                itemElement.dataset.path = item.name;
-                itemElement.innerHTML = `
-                    <i class="fas ${item.type === 'folder' ? 'fa-folder' : 'fa-file-code'}"></i>
-                    <span>${item.name}</span>
+        // Setup event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add project button
+            document.getElementById('add-project').addEventListener('click', addNewProject);
+
+            // Add folder button
+            document.getElementById('add-folder').addEventListener('click', addNewFolder);
+
+            // Add file button
+            document.getElementById('add-file').addEventListener('click', addNewFile);
+
+            // Run button
+            document.getElementById('run-btn').addEventListener('click', updatePreview);
+
+            // Refresh preview button
+            document.getElementById('refresh-preview').addEventListener('click', updatePreview);
+
+            // Copy button
+            document.getElementById('copy-btn').addEventListener('click', () => {
+                navigator.clipboard.writeText(editor.getValue());
+                alert('Code copied to clipboard!');
+            });
+
+            // Language selector
+            document.getElementById('language-selector').addEventListener('change', (e) => {
+                const file = getCurrentFile();
+                if (file) {
+                    file.language = e.target.value;
+                    monaco.editor.setModelLanguage(editor.getModel(), e.target.value);
+                }
+            });
+
+            // Context menu actions
+            document.querySelectorAll('.context-menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    handleContextMenuAction(item.dataset.action);
+                });
+            });
+
+            // Close context menu when clicking elsewhere
+            document.addEventListener('click', () => {
+                contextMenu.style.display = 'none';
+            });
+
+            // Render initial tabs
+            renderProjectTabs();
+            renderFolderTabs();
+            renderFileTabs();
+        });
+
+        // Tab rendering functions
+        function renderProjectTabs() {
+            projectTabs.innerHTML = '';
+            
+            Object.keys(projects).forEach(projectId => {
+                const project = projects[projectId];
+                const tab = document.createElement('div');
+                tab.className = `project-tab ${projectId === currentProject ? 'active' : ''}`;
+                tab.dataset.project = projectId;
+                tab.innerHTML = `
+                    <span>${project.name}</span>
+                    <i class="fas fa-times project-tab-close"></i>
                 `;
                 
-                // Add click handler
-                itemElement.addEventListener('click', (e) => {
-                    if (item.type === 'file') {
-                        openFile(item);
+                tab.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('project-tab-close')) {
+                        closeProject(projectId);
+                        e.stopPropagation();
+                    } else {
+                        setCurrentProject(projectId);
                     }
                 });
                 
-                // Add context menu
-                itemElement.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    showContextMenu(e, item);
-                });
-                
-                parentElement.appendChild(itemElement);
+                projectTabs.insertBefore(tab, document.getElementById('add-project'));
             });
         }
 
-        function openFile(file) {
-            // Check if file is already open in a tab
-            const existingTab = document.querySelector(`.tab[data-path="${file.name}"]`);
-            if (existingTab) {
-                setActiveTab(existingTab);
+        function renderFolderTabs() {
+            folderTabs.innerHTML = '';
+            
+            const project = projects[currentProject];
+            if (!project) return;
+            
+            Object.keys(project.folders).forEach(folderId => {
+                const folder = project.folders[folderId];
+                const tab = document.createElement('div');
+                tab.className = `folder-tab ${folderId === currentFolder ? 'active' : ''}`;
+                tab.dataset.folder = folderId;
+                tab.innerHTML = `
+                    <span>${folder.name}</span>
+                    <i class="fas fa-times folder-tab-close"></i>
+                `;
+                
+                tab.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('folder-tab-close')) {
+                        closeFolder(folderId);
+                        e.stopPropagation();
+                    } else {
+                        setCurrentFolder(folderId);
+                    }
+                });
+                
+                folderTabs.insertBefore(tab, document.getElementById('add-folder'));
+            });
+        }
+
+        function renderFileTabs() {
+            fileTabs.innerHTML = '';
+            
+            const folder = getCurrentFolder();
+            if (!folder) return;
+            
+            Object.keys(folder.files).forEach(fileId => {
+                const file = folder.files[fileId];
+                const tab = document.createElement('div');
+                tab.className = `file-tab ${fileId === currentFile ? 'active' : ''}`;
+                tab.dataset.file = fileId;
+                tab.innerHTML = `
+                    <span>${file.name}</span>
+                    <i class="fas fa-times file-tab-close"></i>
+                `;
+                
+                tab.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('file-tab-close')) {
+                        closeFile(fileId);
+                        e.stopPropagation();
+                    } else {
+                        setCurrentFile(fileId);
+                    }
+                });
+                
+                fileTabs.insertBefore(tab, document.getElementById('add-file'));
+            });
+        }
+
+        // Project management
+        function addNewProject() {
+            const projectName = prompt('Enter project name:');
+            if (projectName) {
+                const projectId = 'project-' + Date.now();
+                projects[projectId] = {
+                    name: projectName,
+                    folders: {
+                        'main': {
+                            name: 'main',
+                            files: {
+                                'index.html': {
+                                    name: 'index.html',
+                                    language: 'html',
+                                    content: '<!DOCTYPE html>\n<html>\n<head>\n\t<title>New Project</title>\n</head>\n<body>\n\t\n</body>\n</html>'
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                renderProjectTabs();
+                setCurrentProject(projectId);
+                setCurrentFolder('main');
+                setCurrentFile('index.html');
+            }
+        }
+
+        function closeProject(projectId) {
+            if (Object.keys(projects).length <= 1) {
+                alert('You must have at least one project');
                 return;
             }
             
-            // Create new tab
-            const tab = document.createElement('div');
-            tab.className = 'tab';
-            tab.dataset.path = file.name;
-            tab.innerHTML = `
-                <span>${file.name}</span>
-                <i class="fas fa-times tab-close"></i>
-            `;
+            delete projects[projectId];
             
-            // Add tab click handler
-            tab.addEventListener('click', (e) => {
-                if (e.target.classList.contains('tab-close')) {
-                    closeTab(tab);
-                    e.stopPropagation();
-                } else {
-                    setActiveTab(tab);
-                }
-            });
-            
-            tabBar.appendChild(tab);
-            setActiveTab(tab);
-            
-            // Set editor content
-            const model = monaco.editor.createModel(
-                file.content,
-                file.language
-            );
-            editor.setModel(model);
-            
-            // Update language selector
-            document.getElementById('language-selector').value = file.language;
-            
-            // Set current file
-            currentFile = file.name;
+            if (projectId === currentProject) {
+                currentProject = Object.keys(projects)[0];
+                const project = projects[currentProject];
+                currentFolder = Object.keys(project.folders)[0];
+                const folder = project.folders[currentFolder];
+                currentFile = Object.keys(folder.files)[0];
+                
+                renderProjectTabs();
+                renderFolderTabs();
+                renderFileTabs();
+                updateEditor();
+            } else {
+                renderProjectTabs();
+            }
         }
 
-        function setActiveTab(tab) {
-            // Update tab states
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            activeTab = tab;
+        function setCurrentProject(projectId) {
+            currentProject = projectId;
+            const project = projects[projectId];
             
-            // Update file explorer selection
-            document.querySelectorAll('.file-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.path === tab.dataset.path) {
-                    item.classList.add('active');
-                }
-            });
+            // Set first folder as current
+            currentFolder = Object.keys(project.folders)[0];
+            const folder = project.folders[currentFolder];
             
-            // Update editor content
-            const file = findFileByName(tab.dataset.path);
+            // Set first file as current
+            currentFile = Object.keys(folder.files)[0];
+            
+            renderProjectTabs();
+            renderFolderTabs();
+            renderFileTabs();
+            updateEditor();
+        }
+
+        // Folder management
+        function addNewFolder() {
+            const folderName = prompt('Enter folder name:');
+            if (folderName) {
+                const folderId = 'folder-' + Date.now();
+                projects[currentProject].folders[folderId] = {
+                    name: folderName,
+                    files: {}
+                };
+                
+                renderFolderTabs();
+                setCurrentFolder(folderId);
+            }
+        }
+
+        function closeFolder(folderId) {
+            const project = projects[currentProject];
+            if (Object.keys(project.folders).length <= 1) {
+                alert('You must have at least one folder');
+                return;
+            }
+            
+            delete project.folders[folderId];
+            
+            if (folderId === currentFolder) {
+                currentFolder = Object.keys(project.folders)[0];
+                const folder = project.folders[currentFolder];
+                currentFile = Object.keys(folder.files)[0];
+                
+                renderFolderTabs();
+                renderFileTabs();
+                updateEditor();
+            } else {
+                renderFolderTabs();
+            }
+        }
+
+        function setCurrentFolder(folderId) {
+            currentFolder = folderId;
+            const folder = projects[currentProject].folders[folderId];
+            
+            // Set first file as current if exists
+            const fileKeys = Object.keys(folder.files);
+            currentFile = fileKeys.length > 0 ? fileKeys[0] : null;
+            
+            renderFolderTabs();
+            renderFileTabs();
+            
+            if (currentFile) {
+                updateEditor();
+            } else {
+                editor.setModel(monaco.editor.createModel('', 'html'));
+            }
+        }
+
+        // File management
+        function addNewFile() {
+            const fileName = prompt('Enter file name (include extension .html, .css, .js):');
+            if (fileName) {
+                const extension = fileName.split('.').pop();
+                let language = 'plaintext';
+                
+                if (['html', 'htm'].includes(extension)) language = 'html';
+                else if (extension === 'css') language = 'css';
+                else if (extension === 'js') language = 'javascript';
+                
+                const fileId = 'file-' + Date.now();
+                projects[currentProject].folders[currentFolder].files[fileId] = {
+                    name: fileName,
+                    language: language,
+                    content: language === 'html' ? '<!DOCTYPE html>\n<html>\n<head>\n\t<title>New Document</title>\n</head>\n<body>\n\t\n</body>\n</html>' : 
+                           language === 'css' ? '/* Your CSS here */' : 
+                           '// Your JavaScript here'
+                };
+                
+                renderFileTabs();
+                setCurrentFile(fileId);
+            }
+        }
+
+        function closeFile(fileId) {
+            const folder = getCurrentFolder();
+            if (Object.keys(folder.files).length <= 1) {
+                alert('You must have at least one file');
+                return;
+            }
+            
+            delete folder.files[fileId];
+            
+            if (fileId === currentFile) {
+                currentFile = Object.keys(folder.files)[0];
+                renderFileTabs();
+                updateEditor();
+            } else {
+                renderFileTabs();
+            }
+        }
+
+        function setCurrentFile(fileId) {
+            currentFile = fileId;
+            renderFileTabs();
+            updateEditor();
+        }
+
+        // Helper functions
+        function getCurrentProject() {
+            return projects[currentProject];
+        }
+
+        function getCurrentFolder() {
+            const project = getCurrentProject();
+            return project ? project.folders[currentFolder] : null;
+        }
+
+        function getCurrentFile() {
+            const folder = getCurrentFolder();
+            return folder ? folder.files[currentFile] : null;
+        }
+
+        function updateEditor() {
+            const file = getCurrentFile();
             if (file) {
                 const model = monaco.editor.createModel(
                     file.content,
@@ -500,7 +794,6 @@
                 );
                 editor.setModel(model);
                 document.getElementById('language-selector').value = file.language;
-                currentFile = file.name;
                 
                 // Update preview if HTML
                 if (file.name.endsWith('.html')) {
@@ -509,254 +802,176 @@
             }
         }
 
-        function closeTab(tab) {
-            tab.remove();
-            
-            // If we're closing the active tab, activate another one
-            if (tab === activeTab) {
-                const remainingTabs = document.querySelectorAll('.tab');
-                if (remainingTabs.length > 0) {
-                    setActiveTab(remainingTabs[remainingTabs.length - 1]);
-                } else {
-                    // No tabs left
-                    editor.setModel(monaco.editor.createModel('', 'html'));
-                    currentFile = null;
-                }
-            }
-        }
-
-        function openInitialFiles() {
-            // Open the first HTML file we find
-            const rootFolder = files['root'];
-            const htmlFile = Object.values(rootFolder.children).find(file => 
-                file.type === 'file' && file.name.endsWith('.html')
-            );
-            
-            if (htmlFile) {
-                openFile(htmlFile);
-            } else {
-                // Open the first file we find
-                const firstFile = Object.values(rootFolder.children).find(file => file.type === 'file');
-                if (firstFile) {
-                    openFile(firstFile);
-                }
-            }
-        }
-
-        // File management functions
-        function findFileByName(name) {
-            const rootFolder = files['root'];
-            return rootFolder.children[name];
-        }
-
-        function updateFileContent(filename, content) {
-            const file = findFileByName(filename);
+        function updateFileContent(fileId, content) {
+            const file = getCurrentFolder().files[fileId];
             if (file) {
                 file.content = content;
                 
-                // If this is the active tab and it's HTML, update preview
-                if (activeTab && activeTab.dataset.path === filename && filename.endsWith('.html')) {
+                // If this is the active file and it's HTML, update preview
+                if (fileId === currentFile && file.name.endsWith('.html')) {
                     updatePreview();
                 }
             }
         }
 
-        function createNewFile(filename, language) {
-            const rootFolder = files['root'];
-            
-            rootFolder.children[filename] = {
-                type: 'file',
-                name: filename,
-                language: language,
-                content: language === 'html' ? '<!DOCTYPE html>\n<html>\n<head>\n\t<title>New Document</title>\n</head>\n<body>\n\t\n</body>\n</html>' : 
-                       language === 'css' ? '/* Your CSS here */' : 
-                       '// Your JavaScript here'
-            };
-            
-            renderFileExplorer();
-            openFile(rootFolder.children[filename]);
-        }
-
-        function createNewFolder(foldername) {
-            const rootFolder = files['root'];
-            
-            rootFolder.children[foldername] = {
-                type: 'folder',
-                name: foldername,
-                children: {}
-            };
-            
-            renderFileExplorer();
-        }
-
-        function renameFile(oldName, newName) {
-            const rootFolder = files['root'];
-            if (rootFolder.children[oldName]) {
-                const file = rootFolder.children[oldName];
-                file.name = newName;
-                rootFolder.children[newName] = file;
-                delete rootFolder.children[oldName];
-                
-                // Update tab if open
-                const tab = document.querySelector(`.tab[data-path="${oldName}"]`);
-                if (tab) {
-                    tab.dataset.path = newName;
-                    tab.querySelector('span').textContent = newName;
-                    
-                    if (tab === activeTab) {
-                        currentFile = newName;
-                    }
-                }
-                
-                renderFileExplorer();
-            }
-        }
-
-        function deleteFile(filename) {
-            const rootFolder = files['root'];
-            if (rootFolder.children[filename]) {
-                delete rootFolder.children[filename];
-                
-                // Close tab if open
-                const tab = document.querySelector(`.tab[data-path="${filename}"]`);
-                if (tab) {
-                    closeTab(tab);
-                }
-                
-                renderFileExplorer();
-            }
-        }
-
         // Preview functions
         function updatePreview() {
-            if (!currentFile) return;
-            
-            const file = findFileByName(currentFile);
+            const file = getCurrentFile();
             if (!file || !file.name.endsWith('.html')) return;
             
             const previewFrame = document.getElementById('preview-frame');
             
             // Get all linked resources
             let htmlContent = file.content;
-            const cssFile = Object.values(files['root'].children).find(f => f.name === 'style.css');
-            const jsFile = Object.values(files['root'].children).find(f => f.name === 'script.js');
+            const folder = getCurrentFolder();
             
-            // If style.css exists but isn't linked, add it
-            if (cssFile && !htmlContent.includes('style.css')) {
-                const headEnd = htmlContent.indexOf('</head>');
-                if (headEnd !== -1) {
-                    htmlContent = htmlContent.slice(0, headEnd) + 
-                                 '\n\t<link rel="stylesheet" href="style.css">' + 
-                                 htmlContent.slice(headEnd);
-                }
-            }
+            // Find CSS and JS files in the same folder
+            const cssFiles = Object.values(folder.files).filter(f => f.name.endsWith('.css'));
+            const jsFiles = Object.values(folder.files).filter(f => f.name.endsWith('.js'));
             
-            // If script.js exists but isn't linked, add it
-            if (jsFile && !htmlContent.includes('script.js')) {
-                const bodyEnd = htmlContent.indexOf('</body>');
-                if (bodyEnd !== -1) {
-                    htmlContent = htmlContent.slice(0, bodyEnd) + 
-                                 '\n\t<script src="script.js"></script>' + 
-                                 htmlContent.slice(bodyEnd);
+            // Inject CSS links if not already present
+            cssFiles.forEach(cssFile => {
+                if (!htmlContent.includes(cssFile.name)) {
+                    const headEnd = htmlContent.indexOf('</head>');
+                    if (headEnd !== -1) {
+                        htmlContent = htmlContent.slice(0, headEnd) + 
+                                     `\n\t<link rel="stylesheet" href="${cssFile.name}">` + 
+                                     htmlContent.slice(headEnd);
+                    }
                 }
-            }
+            });
+            
+            // Inject JS scripts if not already present
+            jsFiles.forEach(jsFile => {
+                if (!htmlContent.includes(jsFile.name)) {
+                    const bodyEnd = htmlContent.indexOf('</body>');
+                    if (bodyEnd !== -1) {
+                        htmlContent = htmlContent.slice(0, bodyEnd) + 
+                                     `\n\t<script src="${jsFile.name}"></script>` + 
+                                     htmlContent.slice(bodyEnd);
+                    }
+                }
+            });
             
             previewFrame.srcdoc = htmlContent;
         }
 
         // Context menu functions
-        function showContextMenu(e, item) {
+        function showContextMenu(e, item, type) {
+            e.preventDefault();
             contextMenuItem = item;
+            contextMenuType = type;
             contextMenu.style.display = 'block';
             contextMenu.style.left = `${e.pageX}px`;
             contextMenu.style.top = `${e.pageY}px`;
-            
-            // Close menu when clicking elsewhere
-            const closeMenu = () => {
-                contextMenu.style.display = 'none';
-                document.removeEventListener('click', closeMenu);
-            };
-            
-            setTimeout(() => {
-                document.addEventListener('click', closeMenu);
-            }, 100);
         }
 
         function handleContextMenuAction(action) {
-            if (!contextMenuItem) return;
+            if (!contextMenuItem || !contextMenuType) return;
             
-            switch(action) {
-                case 'rename':
-                    const newName = prompt('Enter new name:', contextMenuItem.name);
-                    if (newName && newName !== contextMenuItem.name) {
-                        renameFile(contextMenuItem.name, newName);
-                    }
+            switch(contextMenuType) {
+                case 'project':
+                    handleProjectContextAction(action);
                     break;
-                case 'delete':
-                    if (confirm(`Are you sure you want to delete ${contextMenuItem.name}?`)) {
-                        deleteFile(contextMenuItem.name);
-                    }
+                case 'folder':
+                    handleFolderContextAction(action);
+                    break;
+                case 'file':
+                    handleFileContextAction(action);
                     break;
             }
             
             contextMenuItem = null;
+            contextMenuType = null;
+            contextMenu.style.display = 'none';
         }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // New file button
-            document.getElementById('new-file').addEventListener('click', () => {
-                const fileName = prompt('Enter file name (include extension .html, .css, .js):');
-                if (fileName) {
-                    const extension = fileName.split('.').pop();
-                    let language = 'plaintext';
-                    
-                    if (['html', 'htm'].includes(extension)) language = 'html';
-                    else if (extension === 'css') language = 'css';
-                    else if (extension === 'js') language = 'javascript';
-                    
-                    createNewFile(fileName, language);
-                }
-            });
+        function handleProjectContextAction(action) {
+            const projectId = contextMenuItem.dataset.project;
             
-            // New folder button
-            document.getElementById('new-folder').addEventListener('click', () => {
-                const folderName = prompt('Enter folder name:');
-                if (folderName) {
-                    createNewFolder(folderName);
-                }
-            });
-            
-            // Run button
-            document.getElementById('run-btn').addEventListener('click', updatePreview);
-            
-            // Refresh preview button
-            document.getElementById('refresh-preview').addEventListener('click', updatePreview);
-            
-            // Copy button
-            document.getElementById('copy-btn').addEventListener('click', () => {
-                navigator.clipboard.writeText(editor.getValue());
-                alert('Code copied to clipboard!');
-            });
-            
-            // Language selector
-            document.getElementById('language-selector').addEventListener('change', (e) => {
-                if (currentFile) {
-                    const file = findFileByName(currentFile);
-                    if (file) {
-                        file.language = e.target.value;
-                        monaco.editor.setModelLanguage(editor.getModel(), e.target.value);
+            switch(action) {
+                case 'rename':
+                    const newName = prompt('Enter new project name:', projects[projectId].name);
+                    if (newName && newName !== projects[projectId].name) {
+                        projects[projectId].name = newName;
+                        renderProjectTabs();
                     }
-                }
-            });
-            
-            // Context menu actions
-            document.querySelectorAll('.context-menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    handleContextMenuAction(item.dataset.action);
-                });
-            });
+                    break;
+                case 'delete':
+                    if (confirm(`Are you sure you want to delete project "${projects[projectId].name}"?`)) {
+                        closeProject(projectId);
+                    }
+                    break;
+            }
         }
+
+        function handleFolderContextAction(action) {
+            const folderId = contextMenuItem.dataset.folder;
+            const folder = projects[currentProject].folders[folderId];
+            
+            switch(action) {
+                case 'rename':
+                    const newName = prompt('Enter new folder name:', folder.name);
+                    if (newName && newName !== folder.name) {
+                        folder.name = newName;
+                        renderFolderTabs();
+                    }
+                    break;
+                case 'delete':
+                    if (confirm(`Are you sure you want to delete folder "${folder.name}"?`)) {
+                        closeFolder(folderId);
+                    }
+                    break;
+            }
+        }
+
+        function handleFileContextAction(action) {
+            const fileId = contextMenuItem.dataset.file;
+            const file = projects[currentProject].folders[currentFolder].files[fileId];
+            
+            switch(action) {
+                case 'rename':
+                    const newName = prompt('Enter new file name:', file.name);
+                    if (newName && newName !== file.name) {
+                        // Validate extension
+                        const oldExt = file.name.split('.').pop();
+                        const newExt = newName.split('.').pop();
+                        
+                        if (oldExt !== newExt) {
+                            alert('Cannot change file extension');
+                            return;
+                        }
+                        
+                        file.name = newName;
+                        renderFileTabs();
+                    }
+                    break;
+                case 'delete':
+                    if (confirm(`Are you sure you want to delete file "${file.name}"?`)) {
+                        closeFile(fileId);
+                    }
+                    break;
+            }
+        }
+
+        // Add context menu to tabs
+        document.querySelectorAll('.project-tab').forEach(tab => {
+            tab.addEventListener('contextmenu', (e) => {
+                showContextMenu(e, tab, 'project');
+            });
+        });
+
+        document.querySelectorAll('.folder-tab').forEach(tab => {
+            tab.addEventListener('contextmenu', (e) => {
+                showContextMenu(e, tab, 'folder');
+            });
+        });
+
+        document.querySelectorAll('.file-tab').forEach(tab => {
+            tab.addEventListener('contextmenu', (e) => {
+                showContextMenu(e, tab, 'file');
+            });
+        });
     </script>
 </body>
 </html>
