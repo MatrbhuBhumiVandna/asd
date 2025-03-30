@@ -3,75 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Code Compiler</title>
+    <title>CodeCraft - Real-Time Editor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Top Project Tab Bar -->
-        <div class="tab-bar project-tab-bar">
-            <div class="tab active" data-id="project-1">
-                <span>Project 1</span>
-                <button class="close-btn"><i class="fas fa-times"></i></button>
+        <!-- Header -->
+        <header class="app-header">
+            <h1><i class="fas fa-code"></i> CodeCraft</h1>
+            <div class="header-actions">
+                <button id="run-btn" class="btn btn-primary">
+                    <i class="fas fa-play"></i> Run
+                </button>
+                <button id="save-btn" class="btn btn-success">
+                    <i class="fas fa-save"></i> Save
+                </button>
             </div>
-            <button class="add-btn" id="add-project"><i class="fas fa-plus"></i></button>
-        </div>
+        </header>
 
-        <!-- Folder Tab Bar -->
-        <div class="tab-bar folder-tab-bar">
-            <div class="tab active" data-id="folder-1">
-                <span>Main</span>
-                <button class="close-btn"><i class="fas fa-times"></i></button>
-            </div>
-            <button class="add-btn" id="add-folder"><i class="fas fa-plus"></i></button>
-        </div>
-
-        <!-- File Tab Bar -->
-        <div class="tab-bar file-tab-bar">
-            <div class="tab active" data-id="file-1">
-                <span>index.html</span>
-                <button class="close-btn"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="tab" data-id="file-2">
-                <span>styles.css</span>
-                <button class="close-btn"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="tab" data-id="file-3">
-                <span>script.js</span>
-                <button class="close-btn"><i class="fas fa-times"></i></button>
-            </div>
-            <button class="add-btn" id="add-file"><i class="fas fa-plus"></i></button>
-        </div>
-
-        <div class="editor-container">
-            <!-- File Explorer Sidebar -->
+        <div class="main-content">
+            <!-- File Explorer -->
             <div class="file-explorer">
-                <div class="file-tree">
-                    <ul id="project-structure">
-                        <li class="folder active" data-id="folder-1">
-                            <span><i class="fas fa-folder"></i> Main</span>
-                            <ul>
-                                <li class="file active" data-id="file-1"><i class="fas fa-file-code"></i> index.html</li>
-                                <li class="file" data-id="file-2"><i class="fas fa-file-code"></i> styles.css</li>
-                                <li class="file" data-id="file-3"><i class="fas fa-file-code"></i> script.js</li>
-                            </ul>
-                        </li>
-                    </ul>
+                <div class="explorer-header">
+                    <h3>Project Files</h3>
+                    <div class="explorer-actions">
+                        <button id="add-project" class="btn btn-sm btn-icon" title="Add Project">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button id="add-folder" class="btn btn-sm btn-icon" title="Add Folder">
+                            <i class="fas fa-folder-plus"></i>
+                        </button>
+                        <button id="add-file" class="btn btn-sm btn-icon" title="Add File">
+                            <i class="fas fa-file-circle-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="file-tree" id="project-structure">
+                    <!-- Dynamically populated -->
                 </div>
             </div>
 
-            <!-- Code Editor -->
-            <div class="code-editor">
-                <div class="editor-toolbar">
-                    <button id="run-btn"><i class="fas fa-play"></i> Run</button>
-                    <button id="save-btn"><i class="fas fa-save"></i> Save</button>
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <div class="editor-tabs">
+                    <!-- File tabs will appear here -->
                 </div>
                 <textarea id="editor" spellcheck="false"></textarea>
             </div>
 
-            <!-- Preview Pane -->
-            <div class="preview-pane">
+            <!-- Preview Area -->
+            <div class="preview-area">
                 <iframe id="preview-frame"></iframe>
             </div>
         </div>
@@ -81,10 +63,10 @@
     <div class="modal" id="new-project-modal">
         <div class="modal-content">
             <h3>New Project</h3>
-            <input type="text" id="project-name" placeholder="Project name">
+            <input type="text" id="project-name" placeholder="Project name" class="modal-input">
             <div class="modal-actions">
-                <button id="cancel-project">Cancel</button>
-                <button id="create-project">Create</button>
+                <button id="cancel-project" class="btn btn-secondary">Cancel</button>
+                <button id="create-project" class="btn btn-primary">Create</button>
             </div>
         </div>
     </div>
@@ -92,10 +74,10 @@
     <div class="modal" id="new-folder-modal">
         <div class="modal-content">
             <h3>New Folder</h3>
-            <input type="text" id="folder-name" placeholder="Folder name">
+            <input type="text" id="folder-name" placeholder="Folder name" class="modal-input">
             <div class="modal-actions">
-                <button id="cancel-folder">Cancel</button>
-                <button id="create-folder">Create</button>
+                <button id="cancel-folder" class="btn btn-secondary">Cancel</button>
+                <button id="create-folder" class="btn btn-primary">Create</button>
             </div>
         </div>
     </div>
@@ -103,15 +85,15 @@
     <div class="modal" id="new-file-modal">
         <div class="modal-content">
             <h3>New File</h3>
-            <input type="text" id="file-name" placeholder="File name">
-            <select id="file-type">
+            <input type="text" id="file-name" placeholder="File name" class="modal-input">
+            <select id="file-type" class="modal-input">
                 <option value="html">HTML</option>
                 <option value="css">CSS</option>
                 <option value="js">JavaScript</option>
             </select>
             <div class="modal-actions">
-                <button id="cancel-file">Cancel</button>
-                <button id="create-file">Create</button>
+                <button id="cancel-file" class="btn btn-secondary">Cancel</button>
+                <button id="create-file" class="btn btn-primary">Create</button>
             </div>
         </div>
     </div>
