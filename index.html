@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Code Compiler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar with file structure -->
+        <div class="sidebar">
+            <div class="file-actions">
+                <button id="new-file"><i class="fas fa-file"></i> New File</button>
+                <button id="new-folder"><i class="fas fa-folder"></i> New Folder</button>
+            </div>
+            <div class="file-explorer" id="file-explorer">
+                <!-- Files will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Editor area -->
+        <div class="editor-area">
+            <div class="toolbar">
+                <select id="language-selector">
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="php">PHP</option>
+                </select>
+                <button id="run-btn"><i class="fas fa-play"></i> Run</button>
+                <button id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+            <div id="editor" class="editor"></div>
+        </div>
+
+        <!-- Preview area -->
+        <div class="preview-area">
+            <div class="preview-toolbar">
+                <span>Preview</span>
+                <button id="refresh-preview"><i class="fas fa-sync-alt"></i></button>
+            </div>
+            <iframe id="preview-frame" class="preview-frame"></iframe>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
